@@ -1,0 +1,23 @@
+/* CSS Document */
+
+body {
+	background-color: white;
+	color: black;
+	font-size:100%;
+    line-height:100%;
+    letter-spacing:.1em;
+    font-family: sofia-pro-soft, sans-serif;
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1{
+  text-align: center;
+  margin-top: 5%;
+}
+
+.strategies{
+  margin: 5% 25% 5% 25%;
+}
+
+
