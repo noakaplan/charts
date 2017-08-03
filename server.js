@@ -52,6 +52,22 @@ app.get('/ethInfo', function(req,res) {
 	res.json({name:address[0].name, location:address[0].location, decimals:address[0].decimals});
 })
 
+app.get('/ethTokenInfo', function(req,res) {
+	 var reg = new RegExp('/contract/');
+	 var tokensToSend = [];
+	
+
+for (item of address) {
+	var reg = new RegExp('contract', 'm');
+	if(reg.test(item.type)) {
+		tokensToSend.push(item);
+	}
+}
+
+	 res.json(tokensToSend);
+})
+
+
 
 // START THE SERVER
 // =============================================================================

@@ -9,6 +9,7 @@ var account;
 var apiKey;
 var tag;
 var decimals;
+var tokenValues = [];
 
 //balances???
 var ethBalance;
@@ -25,7 +26,7 @@ var ethBalance;
 })();
 
 function init() {
-   testConnection();
+    testConnection();
     getApiKey();
     loadEthereumAccount();
 };  
@@ -41,7 +42,7 @@ function testConnection() {
     })
 }
 
-
+//Get API Key From Server & Save in apiKey
 function getApiKey() {
      $.ajax({
         method: "GET",
@@ -52,6 +53,7 @@ function getApiKey() {
     })
 }
 
+//Load Base Ethereum Account & Info (Same account for all ERC-20 Tokens)
 function loadEthereumAccount() {
     $.ajax({
         method: "GET",
@@ -60,16 +62,48 @@ function loadEthereumAccount() {
         console.log("Info Is " + res.location);
         address = res.location;
         decimals = res.decimals;
-        getBalance(address, decimals);
+        getEthBalance(address, decimals);
     })
 }
 
-function getTokens() {
 //Using the Ethereum Address, Now get the Tokens
+function getEthTokenInfo(address,ethBalance) {
+
+$.ajax({
+        method: "GET",
+        url: baseURL + '/ethTokenInfo'
+    }).done(function(res) {
+        let tokenArray = [];
+        tokenArray = res;
+
+        for (item of tokenArray){
+            console.log(item);
+            getEthTokenBalances(address, item.location, item.decimals, ethBalance);
+        }
+    })
+
+// https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0x57d90b64a1a57749b0f932f1a3395792e12e7055&address=0xe04f27eb70e025b78871a2ad7eabe85e61212761&tag=latest&apikey=YourApiKeyToken
+}
+
+function getEthTokenBalances(address, contractAddress, decimals, ethBalance){
+    module = 'module=account&';
+    action = 'action=tokenbalance&';
+    account = 'address=' + address + '&';
+    tag = 'tag=latest&';
+        console.log(ethURL + module + action + "contractAddress=" + contractAddress + account + tag + 'apikey=' + apiKey);
+
+    $.ajax({
+        method: "GET",
+        url: ethURL + module + action + "contractaddress=" + contractAddress + '&' + account + tag + 'apikey=' + apiKey
+    }).done(function(res) {
+        tokenValues.push(res.result/decimals);
+        loadChart(ethBalance, tokenValues); 
+    })
 
 }
 
-function getBalance(address) {
+//Get the Balance of the Main Ethereum Account at Address
+function getEthBalance(address) {
     module = 'module=account&';
     action = 'action=balance&';
     account = 'address=' + address + '&';
@@ -78,14 +112,16 @@ function getBalance(address) {
         method: "GET",
         url: ethURL + module + action + account + tag + 'apikey=' + apiKey
     }).done(function(res) {
-       ethBalance =  res.result/100000000000000000;
-        loadChart(ethBalance); 
+       ethBalance = res.result/100000000000000000;
+        getEthTokenInfo(address, ethBalance);
     })
 
 }
 
-//Load the Chart
-function loadChart(ethBalance) {
+//Load the Chart with eth Balance (for Now, this needs to be made more modular)
+function loadChart(ethBalance, tokenAmounts) {
+var tempArray = tokenAmounts;
+console.log(tokenAmounts);
 var chart = new Chart(ctx, {
     // The type of chart we want to create
     type: 'doughnut',
@@ -104,15 +140,15 @@ var chart = new Chart(ctx, {
                 'rgba(50, 100, 150, .3)',
                 'rgba(0, 0, 0,1)',
                 'rgba(50, 150, 150, .3)',
-                'rgba(50, 150, 125, .3)',
-                'rgba(50, 150, 100, .3)',
+                'rgba(50, 250, 225, .6)',
+                'rgba(150, 250, 110, .6)',
                 'rgba(75, 150, 100, .3)',
                 'rgba(75, 150, 100, .3)',
                 'rgba(75, 125, 100, .3)',
                 'rgba(75, 100, 100, .3)',
             ],
             
-            data: [1, ethBalance, 2, 2, 1, 2, 0, 0, 0]
+            data: [1, ethBalance, 2, tokenAmounts[1], tokenAmounts[0], 1, 0, 0, 0]
         },
         {
             label: "JAXX",
