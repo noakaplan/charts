@@ -1,9 +1,17 @@
-// call the packages we need
+// call the packages we need for server
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var path = require('path');
-// var db = require('./db.js');
+
+//Call EthScan.io Packages
+var ethCred = require('./ethCred.json');
+var ethToken = ethCred.ethScanToken;
+var api = require('etherscan-api').init(ethToken);
+var danaJaxx = '0xcaefb3135fb5b2189781ffe2736d036b9cbbae37';
+var address = require('./testAddr.json');
+
+//Call Passwords (DON'T LIST THESE FILES ON GITHUB)
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -13,18 +21,37 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var port = process.env.PORT || 8000;        // set our port
 
+//---ETHSCAN.IO API STUFF--//
+
+var balance = api.account.balance(address[0].location);
+balance.then(function(balanceData){
+console.log(address[0].name + ': ' + (balanceData.result/address[0].decimals));
+  // console.log(balanceData);
+});
+
 //MIDDLEWARE API CALLS FOR REQUESTS
 
-app.use(function(req,res) {
+app.use(function(req,res,next) {
   //Do Logging on Every Request
   console.log('Something is happening');
+  next();
 });
 
-//Test Ticker
-app.get('/test', function (req,res) {
-res.json({"message": "hello world"})
-
+//Test Connection
+app.use('/test', function(req, res, next) {
+    // Do Logging on every request
+    console.log('test test test');
+    res.json({message:"success bitch"});
+    next();
 });
+
+app.get('/apiKey', function(req,res) {
+	res.json({message:ethToken});
+})
+
+app.get('/ethInfo', function(req,res) {
+	res.json({name:address[0].name, location:address[0].location, decimals:address[0].decimals});
+})
 
 
 // START THE SERVER

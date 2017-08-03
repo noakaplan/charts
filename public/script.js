@@ -1,4 +1,91 @@
 var ctx = document.getElementById('allStrategies').getContext('2d');
+var baseURL = "http://localhost:8000";
+//EtherScan Stuff
+
+var ethURL = 'https://api.etherscan.io/api?';
+var module;
+var action;
+var account;
+var apiKey;
+var tag;
+var decimals;
+
+//balances???
+var ethBalance;
+
+//Do These Things When the Window Loads 
+(function() {
+    if (document.readyState != "loading") {
+        init();
+    } else {
+        document.addEventListener('DOMContentLoaded', function() {
+        init();
+        }, false);
+    }
+})();
+
+function init() {
+   testConnection();
+    getApiKey();
+    loadEthereumAccount();
+};  
+
+//Test Connection to Back End
+function testConnection() {
+    $.ajax({
+        method: "GET",
+        url: baseURL + `/test`
+    }).done(function(res) {
+        console.log("getting test");
+        console.log("Test result is " + res.message);
+    })
+}
+
+
+function getApiKey() {
+     $.ajax({
+        method: "GET",
+        url: baseURL + '/apiKey'
+    }).done(function(res) {
+        // console.log("API Key Is " + res.message);
+        apiKey = res.message;
+    })
+}
+
+function loadEthereumAccount() {
+    $.ajax({
+        method: "GET",
+        url: baseURL + '/ethInfo'
+    }).done(function(res) {
+        console.log("Info Is " + res.location);
+        address = res.location;
+        decimals = res.decimals;
+        getBalance(address, decimals);
+    })
+}
+
+function getTokens() {
+//Using the Ethereum Address, Now get the Tokens
+
+}
+
+function getBalance(address) {
+    module = 'module=account&';
+    action = 'action=balance&';
+    account = 'address=' + address + '&';
+    tag = 'tag=latest&';
+    $.ajax({
+        method: "GET",
+        url: ethURL + module + action + account + tag + 'apikey=' + apiKey
+    }).done(function(res) {
+       ethBalance =  res.result/100000000000000000;
+        loadChart(ethBalance); 
+    })
+
+}
+
+//Load the Chart
+function loadChart(ethBalance) {
 var chart = new Chart(ctx, {
     // The type of chart we want to create
     type: 'doughnut',
@@ -15,7 +102,7 @@ var chart = new Chart(ctx, {
             borderColor: 'rgba(255, 255, 255, 1)',
             backgroundColor: [
                 'rgba(50, 100, 150, .3)',
-                'rgba(50, 125, 150, .3)',
+                'rgba(0, 0, 0,1)',
                 'rgba(50, 150, 150, .3)',
                 'rgba(50, 150, 125, .3)',
                 'rgba(50, 150, 100, .3)',
@@ -25,7 +112,7 @@ var chart = new Chart(ctx, {
                 'rgba(75, 100, 100, .3)',
             ],
             
-            data: [2, 3, 2, 2, 1, 2, 0, 0, 0]
+            data: [1, ethBalance, 2, 2, 1, 2, 0, 0, 0]
         },
         {
             label: "JAXX",
@@ -147,3 +234,8 @@ var chart = new Chart(ctx, {
         }
     }
 });
+
+}
+
+
+
