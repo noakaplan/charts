@@ -8,7 +8,6 @@ var path = require('path');
 var ethCred = require('./ethCred.json');
 var ethToken = ethCred.ethScanToken;
 var api = require('etherscan-api').init(ethToken);
-var danaJaxx = '0xcaefb3135fb5b2189781ffe2736d036b9cbbae37';
 var address = require('./testAddr.json');
 
 //Call Passwords (DON'T LIST THESE FILES ON GITHUB)
