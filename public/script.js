@@ -1,19 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>fingerprint</title>
-<link href="https://fonts.googleapis.com/css?family=Sofia" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="css/styles.css">
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta name="description" content="IDEO CoLab"></head>
-<body>
-
-<h1>Cryptographic Fingerprint</h1>
-
-<section class="strategies"><canvas id="allStrategies"></canvas></section>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
-
-
-<script>
 var ctx = document.getElementById('allStrategies').getContext('2d');
 var chart = new Chart(ctx, {
     // The type of chart we want to create
@@ -163,15 +147,3 @@ var chart = new Chart(ctx, {
         }
     }
 });
-</script>
-
-<ul>
-<button class="button--green">COINBASE</button>
-<button class="button--green">JAXX</button>
-<button class="button--green">BITGO</button>
-<button class="button--green">ETH WALLET</button>
-<button class="button--green">LEDGER</button>
-<button class="button--green">TREZOR</button>
-</ul>
-
-</body></html> 
